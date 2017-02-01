@@ -1,2 +1,2 @@
 # ng-vault
-Helper methds wrapped over $cacheFactory
+Helper methods wrapped over angular's $cacheFactory

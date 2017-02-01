@@ -1,0 +1,37 @@
+{
+  "name": "ng-vault",
+  "version": "0.1.0",
+  "description": "Helper methods wrapped over angular $cacheFactory",
+  "main": "src/index.js",
+  "scripts": {
+    "watch": "webpack --watch",
+    "serve": "http-server -p 3000",
+    "start": "npm run watch && npm run serve",
+    "dist": "rimraf dist/* && webpack --config ./webpack.config.js && webpack --config ./webpack.config.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamvijaydev/ng-vault.git"
+  },
+  "author": "Vijay Dev <vijaydev.in@gmail.com> (http://vijaydev.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iamvijaydev/ng-vault/issues"
+  },
+  "homepage": "https://github.com/iamvijaydev/ng-vault#readme",
+  "dependencies": {
+    "angular": "^1.6.1"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "eslint": "^3.14.0",
+    "eslint-config-angular": "^0.5.0",
+    "eslint-plugin-angular": "^1.6.1",
+    "http-server": "^0.9.0",
+    "rimraf": "^2.5.4",
+    "webpack": "^1.14.0",
+    "webpack-version-file": "^0.1.2"
+  }
+}
