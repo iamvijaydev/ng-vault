@@ -17,7 +17,7 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
                 return true;
             }
 
-            if ( ! config.types || typeCheck() ) {
+            if ( ! $vaultConfig.types || typeCheck() ) {
                 store.put( key, value );
                 return store.get(key);
             } else {
