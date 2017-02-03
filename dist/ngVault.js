@@ -37,16 +37,16 @@
 
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
-/******/ 			exports: {},
-/******/ 			id: moduleId,
-/******/ 			loaded: false
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
 /******/ 		};
 
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
 /******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
+/******/ 		module.l = true;
 
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -59,144 +59,188 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-	'use strict';
+module.exports = angular;
 
-	var angular = __webpack_require__(1);
-
-	angular.module('ngVault', []).value('$vaultOptions', __webpack_require__(2)).provider('$vaultConfig', __webpack_require__(3)).factory('$vault', __webpack_require__(4));
-
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = angular;
+"use strict";
 
-/***/ },
+
+var angular = __webpack_require__(0);
+
+function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
+    var store = $cacheFactory( $vaultConfig.id ),
+        setOnceTracker = {};
+
+    return {
+        put: function (key, value) {
+            var typeCheck = function () {
+                for ( var type in $vaultConfig.limitTypes ) {
+                    if ( typeof type !== typeof value ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if ( ! $vaultConfig.types || typeCheck() ) {
+                store.put( key, value );
+                return store.get(key);
+            } else {
+                $log.warn( 'Not allowed to save "' + key + '" with typeof "' + typeof value + '" type into $vault!' );
+                return undefined;
+            }
+        },
+        putUpto: function(key, value, mins) {
+            var upto = typeof 0 === typeof mins ? mins : $vaultConfig.putUpto,
+                delay = 1000 * 60 * upto,
+                hasSet = this.put(key, value);
+
+            if ( angular.isDefined(hasSet) ) {
+                $timeout(
+                    store.remove.bind(window, key),
+                    delay
+                );
+            }
+        },
+        setOnce: function(key, value) {
+            var unTracked = ! setOnceTracker[key],
+                hasSet = this.set(key, value);
+
+            if ( angular.isDefined(hasSet) && unTracked ) {
+                setOnceTracker[key] = true;
+            }
+        },
+        get: function(key) {
+            if ( setOnceTracker[key] ) {
+                setOnceTracker[key] = false;
+                delete setOnceTracker[key];
+
+                store.remove(key);
+            }
+
+            return store.get(key);
+        },
+        remove: store.remove,
+        removeAll: function () {
+            setOnceTracker = {}
+            store.removeAll();
+        },
+        destroy: store.destroy
+    }
+}
+
+$vault.$inject = ['$vaultConfig', '$cacheFactory', '$timeout', '$log'];
+
+module.exports = $vault;
+
+
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+"use strict";
 
-	var $vaultOptions = {
-	    id: '$vault',
-	    limitTypes: [],
-	    putUpto: 3
-	};
 
-	module.exports = $vaultOptions;
+function $vaultConfig ($vaultOptions) {
+    var userOptions = {};
 
-/***/ },
+    return {
+        set: function (options) {
+            userOptions = options;
+        },
+        $get: function () {
+            return Object.assign(
+                {},
+                $vaultOptions,
+                userOptions
+            )
+        }
+    };
+}
+
+// app.config(function ($vaultConfigProvider) {
+//     $vaultConfigProvider.set({
+//         id: 'my-vault',
+//         limitTypes: [0, ''],
+//         putUpto: 5
+//     });
+// });
+
+$vaultConfig.$inject = ['$vaultOptions'];
+
+module.exports = $vaultConfig;
+
+
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+"use strict";
 
-	function $vaultConfig($vaultOptions) {
-	    var userOptions = {};
 
-	    return {
-	        set: function (options) {
-	            userOptions = options;
-	        },
-	        $get: function () {
-	            return Object.assign({}, $vaultOptions, userOptions);
-	        }
-	    };
-	}
+var $vaultOptions = {
+    id: '$vault',
+    limitTypes: [],
+    putUpto: 3
+}
 
-	// app.config(function ($vaultConfigProvider) {
-	//     $vaultConfigProvider.set({
-	//         id: 'my-vault',
-	//         limitTypes: [0, ''],
-	//         putUpto: 5
-	//     });
-	// });
+module.exports = $vaultOptions;
 
-	$vaultConfig.$inject = ['$vaultOptions'];
 
-	module.exports = $vaultConfig;
-
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+"use strict";
 
-	var angular = __webpack_require__(1);
 
-	function $vault($vaultConfig, $cacheFactory, $timeout, $log) {
-	    var store = $cacheFactory($vaultConfig.id),
-	        setOnceTracker = {};
+var angular = __webpack_require__(0);
 
-	    return {
-	        put: function (key, value) {
-	            var typeCheck = function () {
-	                for (var type in $vaultConfig.limitTypes) {
-	                    if (typeof type !== typeof value) {
-	                        return false;
-	                    }
-	                }
-	                return true;
-	            };
+angular.module('ngVault', [])
+    .value('$vaultOptions', __webpack_require__(3))
+    .provider('$vaultConfig', __webpack_require__(2))
+    .factory('$vault', __webpack_require__(1));
 
-	            if (!config.types || typeCheck()) {
-	                store.put(key, value);
-	                return store.get(key);
-	            } else {
-	                $log.warn('Not allowed to save "' + key + '" with typeof "' + typeof value + '" type into $vault!');
-	                return undefined;
-	            }
-	        },
-	        putUpto: function (key, value, mins) {
-	            var upto = typeof 0 === typeof mins ? mins : $vaultConfig.putUpto,
-	                delay = 1000 * 60 * upto,
-	                hasSet = this.put(key, value);
 
-	            if (angular.isDefined(hasSet)) {
-	                $timeout(store.remove.bind(window, key), delay);
-	            }
-	        },
-	        setOnce: function (key, value) {
-	            var unTracked = !setOnceTracker[key],
-	                hasSet = this.set(key, value);
-
-	            if (angular.isDefined(hasSet) && unTracked) {
-	                setOnceTracker[key] = true;
-	            }
-	        },
-	        get: function (key) {
-	            if (setOnceTracker[key]) {
-	                setOnceTracker[key] = false;
-	                delete setOnceTracker[key];
-
-	                store.remove(key);
-	            }
-
-	            return store.get(key);
-	        },
-	        remove: store.remove,
-	        removeAll: function () {
-	            setOnceTracker = {};
-	            store.removeAll();
-	        },
-	        destroy: store.destroy
-	    };
-	}
-
-	$vault.$inject = ['$vaultConfig', '$cacheFactory', '$timeout', '$log'];
-
-	module.exports = $vault;
-
-/***/ }
+/***/ })
 /******/ ]);
