@@ -1,26 +1,24 @@
-var webpack = require('webpack');
-var fs = require('fs');
-var path = require('path');
+const webpack = require('webpack');
+const path = require('path');
+const fs = require('fs');
+const webpackMerge = require('webpack-merge');
+const commonConfig = require('./webpack.base.js');
 
-module.exports = {
-    entry: './src/index.js',
-    output: {
-        filename: 'ngVault.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    target: 'node',
-    externals: 'angular',
-    plugins: [
-        new webpack.BannerPlugin({
-            banner: `v${require('./package.json').version}\n\n${fs.readFileSync('./LICENSE', 'utf8')}`,
-            raw: false,
-            entryOnly: true
-        })
-    ],
-    devServer: {
-        contentBase: path.join(__dirname, 'example'),
-        compress: true,
-        port: 3000,
-        hot: true
-    }
-};
+module.exports = function(env) {
+    return webpackMerge(commonConfig(), {
+        plugins: [
+            new webpack.BannerPlugin({
+                banner: `v${require('./package.json').version}\n\n${fs.readFileSync('./LICENSE', 'utf8')}`,
+                raw: false,
+                entryOnly: true
+            })
+        ],
+        devServer: {
+            contentBase: path.join(__dirname, '/'),
+            publicPath: '/dist/',
+            inline: false,
+            compress: true,
+            port: 3000
+        }
+    });
+}

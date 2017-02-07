@@ -1,8 +1,15 @@
 'use strict';
 
-var angular = require('angular');
+function main () {
+    var angular = require('angular');
+    var moduleName = 'ng-vault';
 
-angular.module('ngVault', [])
-    .value('$vaultOptions', require('./$vaultOptions.value.js'))
-    .provider('$vaultConfig', require('./$vaultConfig.provider.js'))
-    .factory('$vault', require('./$vault.factory.js'));
+    angular.module(moduleName, [])
+        .value('$vaultOptions', require('./$vaultOptions.value.js'))
+        .provider('$vaultConfig', require('./$vaultConfig.provider.js'))
+        .factory('$vault', require('./$vault.factory.js'));
+
+    return moduleName;
+}
+
+module.exports = main();

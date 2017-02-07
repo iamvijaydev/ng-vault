@@ -59,8 +59,7 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
         removeAll: function () {
             setOnceTracker = {}
             store.removeAll();
-        },
-        destroy: store.destroy
+        }
     }
 }
 

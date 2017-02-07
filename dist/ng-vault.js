@@ -24,7 +24,17 @@
  * SOFTWARE.
  * 
  */
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("angular"));
+	else if(typeof define === 'function' && define.amd)
+		define(["angular"], factory);
+	else if(typeof exports === 'object')
+		exports["ng-vault"] = factory(require("angular"));
+	else
+		root["ng-vault"] = factory(root["angular"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -96,7 +106,7 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-module.exports = angular;
+module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
 
 /***/ }),
 /* 1 */
@@ -234,13 +244,21 @@ module.exports = $vaultOptions;
 "use strict";
 
 
-var angular = __webpack_require__(0);
+function main () {
+    var angular = __webpack_require__(0);
+    var moduleName = 'ng-vault';
 
-angular.module('ngVault', [])
-    .value('$vaultOptions', __webpack_require__(3))
-    .provider('$vaultConfig', __webpack_require__(2))
-    .factory('$vault', __webpack_require__(1));
+    angular.module(moduleName, [])
+        .value('$vaultOptions', __webpack_require__(3))
+        .provider('$vaultConfig', __webpack_require__(2))
+        .factory('$vault', __webpack_require__(1));
+
+    return moduleName;
+}
+
+module.exports = main();
 
 
 /***/ })
 /******/ ]);
+});
