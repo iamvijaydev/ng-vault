@@ -1,6 +1,6 @@
 {
   "name": "ng-vault",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Helper methods wrapped over angular $cacheFactory",
   "main": "dist/ng-vault.js",
   "module": "src/index.js",
