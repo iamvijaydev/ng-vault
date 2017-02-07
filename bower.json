@@ -11,9 +11,9 @@
     "cache",
     "$cacheFactory",
     "caching",
-    "cache once",
-    "cache upto",
-    "angular"
+    "cache-once",
+    "cache-upto",
+    "angular-module"
   ],
   "homepage": "https://github.com/iamvijaydev/ng-vault",
   "repository": {
