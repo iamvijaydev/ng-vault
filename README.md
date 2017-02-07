@@ -73,7 +73,7 @@ putUpto | `key`{string}, `value`{Any}, `mins`{Number} | Put for certain time, af
 setOnce | `key`{string}, `value`{Any} | Put value and remove once it's retrieved
 get | `key`{string} | Get the stored value. If not found will return `undefined`
 remove | `key`{string} | Remove a key from `$vault`
-removeAll | - | Remove everything from `$vault`
+removeAll | NA | Remove everything from `$vault`
 
 
 

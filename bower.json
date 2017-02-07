@@ -1,0 +1,34 @@
+{
+  "name": "ng-vault",
+  "description": "Helper methods wrapped over angular $cacheFactory",
+  "main": "src/index.js",
+  "authors": [
+    "Vijay <vijaydev.in@gmail.com> (http://vijaydev.com/)"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "vault",
+    "cache",
+    "$cacheFactory",
+    "caching",
+    "cache once",
+    "cache upto",
+    "angular"
+  ],
+  "homepage": "https://github.com/iamvijaydev/ng-vault",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamvijaydev/ng-vault.git"
+  },
+  "moduleType": "node",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.1"
+  }
+}
