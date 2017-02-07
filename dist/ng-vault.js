@@ -1,5 +1,5 @@
 /*!
- * v0.1.0
+ * v0.2.0
  * 
  * MIT License
  * 
@@ -174,8 +174,7 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
         removeAll: function () {
             setOnceTracker = {}
             store.removeAll();
-        },
-        destroy: store.destroy
+        }
     }
 }
 
