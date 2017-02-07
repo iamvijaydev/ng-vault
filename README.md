@@ -1,4 +1,4 @@
-# ng-vault
+# ng-vault [![npm version](https://badge.fury.io/js/ng-vault.svg)](https://badge.fury.io/js/ng-vault) 
 Helper methods wrapped over angular's `$cacheFactory`. This module provides:
 
 * `$vault` factory for storing and retrieving data.
