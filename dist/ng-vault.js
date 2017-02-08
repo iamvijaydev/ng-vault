@@ -1,5 +1,5 @@
 /*!
- * v0.3.1
+ * v0.4.0
  * 
  * MIT License
  * 
@@ -125,18 +125,25 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
         put: function (key, value) {
             var typeCheck = function () {
                 for ( var type in $vaultConfig.limitTypes ) {
-                    if ( typeof type !== typeof value ) {
+                    if ( ! $vaultConfig.limitTypes[type] && angular[type](value) ) {
                         return false;
                     }
                 }
+
                 return true;
             }
 
-            if ( ! $vaultConfig.types || typeCheck() ) {
-                store.put( key, value );
-                return store.get(key);
+            if ( angular.isDefined(value) ) {
+                if ( typeCheck() ) {
+                    store.put( key, value );
+                    return store.get(key);
+                } else {
+                    $log.warn( 'Not allowed to save "' + key + '" with typeof "' + typeof value + '" type into $vault!' );
+                    return undefined;
+                }
             } else {
-                $log.warn( 'Not allowed to save "' + key + '" with typeof "' + typeof value + '" type into $vault!' );
+                $log.warn( 'Only defined values are allowed' );
+                $log.warn( key, typeof value, value );
                 return undefined;
             }
         },
@@ -150,14 +157,21 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
                     store.remove.bind(window, key),
                     delay
                 );
+
+                return hasSet;
+            } else {
+                return undefined;
             }
         },
-        setOnce: function(key, value) {
+        putOnce: function(key, value) {
             var unTracked = ! setOnceTracker[key],
                 hasSet = this.set(key, value);
 
             if ( angular.isDefined(hasSet) && unTracked ) {
                 setOnceTracker[key] = true;
+                return hasSet;
+            } else {
+                return undefined;
             }
         },
         get: function(key) {
@@ -170,11 +184,15 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
 
             return store.get(key);
         },
+        has: function (key) {
+            return angular.isDefined( this.get(key) );
+        },
         remove: store.remove,
         removeAll: function () {
             setOnceTracker = {}
             store.removeAll();
-        }
+        },
+        info: store.info
     }
 }
 
@@ -190,30 +208,41 @@ module.exports = $vault;
 "use strict";
 
 
-function $vaultConfig ($vaultOptions) {
-    var userOptions = {};
+var angular = __webpack_require__(0);
+
+function $vaultConfig ($vaultOptions, $log) {
+    var userOptions = Object.assign(
+        {},
+        $vaultOptions
+    )
 
     return {
         set: function (options) {
-            userOptions = options;
+            if ( angular.isDefined(options.id) ) {
+                userOptions.id = options.id;
+            }
+
+            if ( angular.isNumber(options.putUpto) ) {
+                userOptions.putUpto = options.putUpto;
+            }
+
+            for ( var type in options.limitTypes ) {
+                if ( angular.hasOwnProperty(options.limitTypes) ) {
+                    userOptions.limitTypes[type] = options.limitTypes[type];
+                } else {
+                    $log.warn('Please follow proper limitTypes format:', 'https://github.com/iamvijaydev/ng-vault#provider-configuration' );
+                    $log.warn('All limitTypes formats:', 'https://github.com/iamvijaydev/ng-vault/blob/master/src/%24vaultOptions.value.js#L5-L11');
+                }
+            }
         },
         $get: function () {
             return Object.assign(
                 {},
-                $vaultOptions,
                 userOptions
             )
         }
     };
 }
-
-// app.config(function ($vaultConfigProvider) {
-//     $vaultConfigProvider.set({
-//         id: 'my-vault',
-//         limitTypes: [0, ''],
-//         putUpto: 5
-//     });
-// });
 
 $vaultConfig.$inject = ['$vaultOptions'];
 
@@ -229,7 +258,14 @@ module.exports = $vaultConfig;
 
 var $vaultOptions = {
     id: '$vault',
-    limitTypes: [],
+    limitTypes: {
+        isArray: true,
+        isDate: true,
+        isFunction: true,
+        isNumber: true,
+        isObject: true,
+        isString: true
+    },
     putUpto: 3
 }
 
