@@ -2,7 +2,14 @@
 
 var $vaultOptions = {
     id: '$vault',
-    limitTypes: [],
+    limitTypes: {
+        isArray: true,
+        isDate: true,
+        isFunction: true,
+        isNumber: true,
+        isObject: true,
+        isString: true
+    },
     putUpto: 3
 }
 

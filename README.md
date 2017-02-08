@@ -44,26 +44,25 @@ Normally we may not need to configure the behaviour of `$vault`. Still he is an 
 angular.module('mainApp')
     .config(function ($vaultConfigProvider) {
         $vaultConfigProvider.set({
-            id: 'my-vault',
-            limitTypes: [0, ''],
-            limitTypes: [{
-                value: 0,
-                type: typeof 0,
-
-            }, {
-                value: '',
-
-            }]
+            id: 'starwars',
+            limitTypes: {
+                isArray: true,
+                isDate: true,
+                isFunction: true,
+                isNumber: true,
+                isObject: true,
+                isString: true
+            },
             putUptoMins: 5
         });
     });
 ```
 
-### id - type:`String` - default:`my-vault`
+### id - type:`String` - default:`$vault`
 The unique name with which the internal `store` ((code)[https://github.com/iamvijaydev/ng-vault/blob/master/src/%24vault.factory.js#L6]) of `ng-vault` will be created.
 
 ### limitTypes - type:`Array` - default:`[]`
-By default we can save any type of data into `$cacheFactory`, `$vault` can be configured to accept only the configured types. This can may be help control the storage limit. Skip this to allow `$vault` to save any type of data.
+By default we can save any type of data into `$cacheFactory`, `$vault` can be configured to accept only the configured types. This can be help control `$vault` usage. Skip this to allow `$vault` to save all type of data. The key names in options, `isArray`, `isDate`... are the same methods available on angular. Internally `$vault` uses `angular.<key name>` to check types. Using plain `typeof type === typeof vaule` can produce inconsistent results.
 
 ### putUpto - type:`Number` - default:`3`
 Using when we put some data in, it will be retained as long as it's not removed. But sometime we may want to retain data only for a short while. It should be removed once the time is up. We can use `putUpto` method to put data with an additional `mins` argument. Here `putUptoMins` can be set as the default value to be used, in case `putUpto` is not provided with an additional `mins` argument.
@@ -80,6 +79,10 @@ Param | Type | Required | Details
 key | String | yes | Name of the key
 value | Any | yes | Value to be saved
 
+```javascript
+$vault.put('episode-4', 'A New Hope');
+```
+
 ### putUpto
 Put for certain time, after which it will be removed
 
@@ -89,6 +92,10 @@ key | String | yes | Name of the key
 value | Any | yes | Value to be saved
 mins | Number | no | Mins after which the data should be removed
 
+```javascript
+$vault.putUpto('episode-5', 'The Empire Strikes Back', 1);
+```
+
 ### putOnce
 Put value and remove once it's retrieved.
 
@@ -97,12 +104,21 @@ Param | Type | Required | Details
 key | String | yes | Name of the key
 value | Any | yes | Value to be saved
 
+```javascript
+$vault.putUpto('episode-6', 'Return of the Jedi ', 1);
+```
+
 ### get
 Get a stored data. If not found it will return `undefined`.
 
 Param | Type | Required | Details
 --- | :--- | :--- | :---
 key | String | yes | Name of the key
+
+```javascript
+$vault.get('episode-2');
+// Attack of the Clones
+```
 
 ### has
 Check if a particular key exist. Returns `true` or `false`.
@@ -111,6 +127,11 @@ Param | Type | Required | Details
 --- | :--- | :--- | :---
 key | String | yes | Name of the key
 
+```javascript
+$vault.has('episode-3');
+// true
+```
+
 ### remove
 Remove a key from `$vault`
 
@@ -118,11 +139,27 @@ Param | Type | Required | Details
 --- | :--- | :--- | :---
 key | String | yes | Name of the key
 
-### removeAll
-Remove everything from `$vault`
+```javascript
+$vault.remove('episode-1');
+```
 
 ### info
 Retrieve information regarding the store - id and size
+
+```javascript
+$vault.info();
+// {
+//     id: 'starwars',
+//     size: 5
+// }
+```
+
+### removeAll
+Remove everything from `$vault`
+
+```javascript
+$vault.removeAll();
+```
 
 
 # TODO

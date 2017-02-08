@@ -10,10 +10,11 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
         put: function (key, value) {
             var typeCheck = function () {
                 for ( var type in $vaultConfig.limitTypes ) {
-                    if ( typeof type !== typeof value ) {
+                    if ( ! $vaultConfig.limitTypes[type] && angular[type](value) ) {
                         return false;
                     }
                 }
+
                 return true;
             }
 
