@@ -17,11 +17,17 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
                 return true;
             }
 
-            if ( ! $vaultConfig.types || typeCheck() ) {
-                store.put( key, value );
-                return store.get(key);
+            if ( angular.isDefined(value) ) {
+                if ( typeCheck() ) {
+                    store.put( key, value );
+                    return store.get(key);
+                } else {
+                    $log.warn( 'Not allowed to save "' + key + '" with typeof "' + typeof value + '" type into $vault!' );
+                    return undefined;
+                }
             } else {
-                $log.warn( 'Not allowed to save "' + key + '" with typeof "' + typeof value + '" type into $vault!' );
+                $log.warn( 'Only defined values are allowed' );
+                $log.warn( key, typeof value, value );
                 return undefined;
             }
         },
@@ -35,14 +41,21 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
                     store.remove.bind(window, key),
                     delay
                 );
+
+                return hasSet;
+            } else {
+                return undefined;
             }
         },
-        setOnce: function(key, value) {
+        putOnce: function(key, value) {
             var unTracked = ! setOnceTracker[key],
                 hasSet = this.set(key, value);
 
             if ( angular.isDefined(hasSet) && unTracked ) {
                 setOnceTracker[key] = true;
+                return hasSet;
+            } else {
+                return undefined;
             }
         },
         get: function(key) {
@@ -55,11 +68,15 @@ function $vault ($vaultConfig, $cacheFactory, $timeout, $log) {
 
             return store.get(key);
         },
+        has: function (key) {
+            return angular.isDefined( this.get(key) );
+        },
         remove: store.remove,
         removeAll: function () {
             setOnceTracker = {}
             store.removeAll();
-        }
+        },
+        info: store.info
     }
 }
 

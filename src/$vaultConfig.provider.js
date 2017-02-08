@@ -17,14 +17,6 @@ function $vaultConfig ($vaultOptions) {
     };
 }
 
-// app.config(function ($vaultConfigProvider) {
-//     $vaultConfigProvider.set({
-//         id: 'my-vault',
-//         limitTypes: [0, ''],
-//         putUpto: 5
-//     });
-// });
-
 $vaultConfig.$inject = ['$vaultOptions'];
 
 module.exports = $vaultConfig;

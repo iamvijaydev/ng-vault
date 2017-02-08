@@ -1,9 +1,8 @@
-# ng-vault [![npm version](https://badge.fury.io/js/ng-vault.svg)](https://badge.fury.io/js/ng-vault) 
-Helper methods wrapped over angular's `$cacheFactory`. This module provides:
-
-* `$vault` factory for storing and retrieving data.
-* `$vaultConfigProvider` for configuring the behaviour of `$vault`
-
+# ng-vault [![npm version](https://badge.fury.io/js/ng-vault.svg)](https://badge.fury.io/js/ng-vault)
+===========
+ng-vault wraps over angular's `$cacheFactory` to provide few nifty ways to save and retrieve data. ng-vault contains these two parts:
+* `$vault` factory which has methods for storing and retrieving data.
+* `$vaultConfigProvider` for configuring the behaviour of `$vault` factory.
 
 
 # Installation
@@ -39,42 +38,91 @@ You can also include it in the old fashion way as:
 ```
 
 
-# Configuration
-We can configure few things while the `mainApp` is configured. Here is an example:
-
+# Provider Configuration
+Normally we may not need to configure the behaviour of `$vault`. Still he is an example of how we can do it:
 ```javascript
 angular.module('mainApp')
     .config(function ($vaultConfigProvider) {
         $vaultConfigProvider.set({
             id: 'my-vault',
             limitTypes: [0, ''],
-            putUpto: 5
+            limitTypes: [{
+                value: 0,
+                type: typeof 0,
+
+            }, {
+                value: '',
+
+            }]
+            putUptoMins: 5
         });
     });
 ```
 
-### id - _{String}_ - _my-vault_
-The unique name with which the internal `store` ((code)[]) of `ng-vault` will be created.
+### id - type:`String` - default:`my-vault`
+The unique name with which the internal `store` ((code)[https://github.com/iamvijaydev/ng-vault/blob/master/src/%24vault.factory.js#L6]) of `ng-vault` will be created.
 
-### limitTypes - _{Array}_ - _[]_
-We can limit the type of the values that are allowed to be store in our `$vault`. To avoid any confusion regarding the types, the provider expects the entries to be an actual value rather than `typeof value`. In the example above we are providing number and string as the only two types to be stored. Skip this to allow all values.
+### limitTypes - type:`Array` - default:`[]`
+By default we can save any type of data into `$cacheFactory`, `$vault` can be configured to accept only the configured types. This can may be help control the storage limit. Skip this to allow `$vault` to save any type of data.
 
-### putUpto - _{Number}_ - _3_
-We can store a value for certain time with `$vault.putUpto(key, value, mins)`. After which the value will be automatically removed from store. This option allows to configure the default timeout value, in case the actual user doesn't provide the timeout. In the example above we are setting the time to 5 mins.
-
+### putUpto - type:`Number` - default:`3`
+Using when we put some data in, it will be retained as long as it's not removed. But sometime we may want to retain data only for a short while. It should be removed once the time is up. We can use `putUpto` method to put data with an additional `mins` argument. Here `putUptoMins` can be set as the default value to be used, in case `putUpto` is not provided with an additional `mins` argument.
 
 
 # Usage
-Now we can inject `$vault` into any other part of our code to `put` and `get` values. Here are the list of methods that `$vault` packs:
-Method | Parameters | Description
---- | :--- | :---
-put | `key`{string}, `value`{Any} | Put value into `$vault`
-putUpto | `key`{string}, `value`{Any}, `mins`{Number} | Put for certain time, after which it will be removed
-setOnce | `key`{string}, `value`{Any} | Put value and remove once it's retrieved
-get | `key`{string} | Get the stored value. If not found will return `undefined`
-remove | `key`{string} | Remove a key from `$vault`
-removeAll | NA | Remove everything from `$vault`
+Now we can inject `$vault` into any other part of our code to `put` and `get` values. Here are the list of all methods that `$vault` packs:
 
+### put
+To put data in, only defined data. It will check the data type with the set `limitTypes`. If it passed it will saved. If not it will display a console warn.
+
+Param | Type | Required | Details
+--- | :--- | :--- | :---
+key | String | yes | Name of the key
+value | Any | yes | Value to be saved
+
+### putUpto
+Put for certain time, after which it will be removed
+
+Param | Type | Required | Details
+--- | :--- | :--- | :---
+key | String | yes | Name of the key
+value | Any | yes | Value to be saved
+mins | Number | no | Mins after which the data should be removed
+
+### putOnce
+Put value and remove once it's retrieved.
+
+Param | Type | Required | Details
+--- | :--- | :--- | :---
+key | String | yes | Name of the key
+value | Any | yes | Value to be saved
+
+### get
+Get a stored data. If not found it will return `undefined`.
+
+Param | Type | Required | Details
+--- | :--- | :--- | :---
+key | String | yes | Name of the key
+
+### has
+Check if a particular key exist. Returns `true` or `false`.
+
+Param | Type | Required | Details
+--- | :--- | :--- | :---
+key | String | yes | Name of the key
+
+### remove
+Remove a key from `$vault`
+
+Param | Type | Required | Details
+--- | :--- | :--- | :---
+key | String | yes | Name of the key
+
+### removeAll
+Remove everything from `$vault`
+
+### info
+Retrieve information regarding the store - id and size
 
 
 # TODO
