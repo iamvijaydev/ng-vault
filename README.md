@@ -59,7 +59,7 @@ angular.module('mainApp')
 ```
 
 ### id - type:`String` - default:`$vault`
-The unique name with which the internal `store` ((code)[https://github.com/iamvijaydev/ng-vault/blob/master/src/%24vault.factory.js#L6]) of `ng-vault` will be created.
+The unique name with which the internal `store` of `ng-vault` will be created.
 
 ### limitTypes - type:`Array` - default:`[]`
 By default we can save any type of data into `$cacheFactory`, `$vault` can be configured to accept only the configured types. This can be help control `$vault` usage. Skip this to allow `$vault` to save all type of data. The key names in options, `isArray`, `isDate`... are the same methods available on angular. Internally `$vault` uses `angular.<key name>` to check types. Using plain `typeof type === typeof vaule` can produce inconsistent results.
@@ -93,7 +93,11 @@ value | Any | yes | Value to be saved
 mins | Number | no | Mins after which the data should be removed
 
 ```javascript
-$vault.putUpto('episode-5', 'The Empire Strikes Back', 1);
+$vault.putUpto('episode-5', 'The Empire Strikes Back', 5);
+
+// after 5 mins (5 * 1000 * 60)
+$vault.has('episode-5');
+// false
 ```
 
 ### putOnce
@@ -105,7 +109,13 @@ key | String | yes | Name of the key
 value | Any | yes | Value to be saved
 
 ```javascript
-$vault.putUpto('episode-6', 'Return of the Jedi ', 1);
+$vault.putOnce('episode-6', 'Return of the Jedi');
+
+$vault.get('episode-6');
+// Return of the Jedi
+
+$vault.has('episode-6');
+// false
 ```
 
 ### get
