@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 
-function $vaultConfig ($vaultOptions) {
+function $vaultConfig ($vaultOptions, $log) {
     var userOptions = Object.assign(
         {},
         $vaultOptions
@@ -21,6 +21,9 @@ function $vaultConfig ($vaultOptions) {
             for ( var type in options.limitTypes ) {
                 if ( angular.hasOwnProperty(options.limitTypes) ) {
                     userOptions.limitTypes[type] = options.limitTypes[type];
+                } else {
+                    $log.warn('Please follow proper limitTypes format:', 'https://github.com/iamvijaydev/ng-vault#provider-configuration' );
+                    $log.warn('All limitTypes formats:', 'https://github.com/iamvijaydev/ng-vault/blob/master/src/%24vaultOptions.value.js#L5-L11');
                 }
             }
         },
